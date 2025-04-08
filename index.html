@@ -13,6 +13,24 @@
             --background: #0d1117;
             --text: #ffffff;
             --accent: #f9a826;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --footer-text: rgba(255, 255, 255, 0.7);
+            --switch-body: #333;
+            --switch-handle: #f9a826;
+        }
+        
+        [data-theme="light"] {
+            --primary: #2563eb;
+            --secondary: #4f46e5;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --accent: #ea580c;
+            --card-bg: rgba(0, 0, 0, 0.05);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --footer-text: rgba(0, 0, 0, 0.7);
+            --switch-body: #e4e4e7;
+            --switch-handle: #ea580c;
         }
         
         body {
@@ -65,20 +83,21 @@
         }
         
         .week-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
             border-radius: 10px;
             padding: 1.5rem;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--card-border);
         }
         
         .week-card:hover {
             transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: var(--card-bg);
+            filter: brightness(1.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             border-color: var(--primary);
         }
         
@@ -145,7 +164,80 @@
             padding: 2rem;
             text-align: center;
             font-size: 0.9rem;
-            opacity: 0.7;
+            color: var(--footer-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        /* Light Switch Styles */
+        .theme-switch-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 100px;
+            background: var(--switch-body);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .switch-plate {
+            width: 70px;
+            height: 110px;
+            background: #d1d5db;
+            border-radius: 10px;
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            z-index: -1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .switch-handle {
+            width: 20px;
+            height: 40px;
+            background: var(--switch-handle);
+            border-radius: 5px;
+            position: relative;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .switch-handle:before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            top: 5px;
+            left: 5px;
+        }
+        
+        [data-theme="light"] .switch-handle {
+            transform: translateY(-40px);
+        }
+        
+        .theme-label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
         
         @keyframes glow {
@@ -261,7 +353,14 @@
     </div>
     
     <footer>
-        &copy; 2025 Islombek - GitHub Portfolio
+        <div class="theme-switch-wrapper">
+            <div class="theme-switch" id="theme-switch">
+                <div class="switch-plate"></div>
+                <div class="switch-handle"></div>
+            </div>
+            <div class="theme-label">Switch to Light Mode</div>
+        </div>
+        <div>&copy; 2025 Islombek - GitHub Portfolio</div>
     </footer>
     
     <script>
@@ -303,6 +402,42 @@
                     content.style.display = 'none';
                 }
             });
+            
+            // Theme switch functionality
+            const themeSwitch = document.getElementById('theme-switch');
+            const themeLabel = document.querySelector('.theme-label');
+            
+            // Check for saved theme preference or use default dark theme
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            // Update label based on current theme
+            updateThemeLabel(currentTheme);
+            
+            // Add event listener to toggle theme
+            themeSwitch.addEventListener('click', function() {
+                let theme = document.documentElement.getAttribute('data-theme');
+                
+                // Toggle theme
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    updateThemeLabel('light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    updateThemeLabel('dark');
+                }
+            });
+            
+            // Function to update the theme label text
+            function updateThemeLabel(theme) {
+                if (theme === 'dark') {
+                    themeLabel.textContent = 'Switch to Light Mode';
+                } else {
+                    themeLabel.textContent = 'Switch to Dark Mode';
+                }
+            }
         });
         
         function createParticle(container) {
