@@ -1,0 +1,51 @@
+Library_Name,Shelf_Location,Condition,ISBN,Purchase_Year,Cover_Type
+Oakridge,C1,Very Good,978-8742913578,2017,Hardcover
+Riverdale,C2,Good,978-3197465081,2015,Paperback
+Meadowbrook_Central,A3,Excellent,978-2846029384,2020,Hardcover
+Sunset_Hills,B2,Fair,978-1087634593,2010,Paperback
+Cedar_Grove,D5,Good,978-6294759310,2018,Hardcover
+Lakeside_Memorial,E1,Very Good,978-5639108742,2016,Paperback
+Greenfield,A1,Excellent,978-4567839201,2019,Hardcover
+Harmony_Heights,B4,Poor,978-9102837465,2005,Paperback
+Pinecrest_Branch,C3,Good,978-6475839201,2017,Hardcover
+Westview,D2,Fair,978-7384912056,2012,Paperback
+Mountain_Valley,E4,Very Good,978-2918374650,2015,Hardcover
+Brookside,A2,Good,978-5647382910,2014,Paperback
+Fairview_Central,B3,Excellent,978-9283746501,2021,Hardcover
+Stonebridge,C4,Poor,978-3746592018,2008,Paperback
+Golden_Oaks,D1,Good,978-4736592010,2016,Hardcover
+Maplewood_Branch,E3,Very Good,978-9283465019,2018,Paperback
+Elmwood,A4,Fair,978-8273910564,2011,Hardcover
+Crestview,B1,Good,978-3827465019,2015,Paperback
+Willowdale,C5,Excellent,978-7362819045,2022,Hardcover
+Highland_Park,D3,Poor,978-9182736405,2007,Paperback
+Ridgemont_Memorial,E2,Good,978-2837465019,2013,Hardcover
+Blue_Valley_Branch,A5,Very Good,978-8273645019,2019,Paperback
+Sunnyside,B5,Fair,978-7362891450,2010,Hardcover
+Woodlawn,C1,Good,978-9283746501,2016,Paperback
+Eastside,D4,Excellent,978-8273645091,2020,Hardcover
+Northridge_Branch,E5,Poor,978-7362819045,2006,Paperback
+Springdale_Central,A1,Good,978-8273645019,2014,Hardcover
+Silver_Creek,B2,Very Good,978-7362918450,2017,Paperback
+Redwood,C2,Fair,978-8273645091,2012,Hardcover
+Crystal_Springs,D5,Good,978-7364591820,2015,Paperback
+Oakwood_Memorial,E1,Excellent,978-8273640591,2021,Hardcover
+Riverside_Branch,A3,Poor,978-7364519820,2009,Paperback
+Meadowview,B4,Good,978-8274635091,2013,Hardcover
+Forest_Hills,C3,Very Good,978-7364519280,2018,Paperback
+Lakeshore,D2,Fair,978-8273456019,2011,Hardcover
+Valley_View,E4,Good,978-7363459182,2016,Paperback
+Hilltop_Central,A2,Excellent,978-8273456091,2020,Hardcover
+Clearwater_Branch,B3,Poor,978-7364591820,2007,Paperback
+Pinehurst,C4,Good,978-8273450619,2014,Hardcover
+Mountainview_Memorial,D1,Very Good,978-7346519820,2019,Paperback
+Greenwood,E3,Fair,978-8273450691,2010,Hardcover
+Waterfront,A4,Good,978-7364519802,2015,Paperback
+Parkside,B1,Excellent,978-8273450169,2022,Hardcover
+Sunset_Valley,C5,Poor,978-7364519280,2008,Paperback
+Cedar_Park_Branch,D3,Good,978-8273405691,2013,Hardcover
+Lakeside_Heights,E2,Very Good,978-7364159820,2017,Paperback
+Meadowbrook,A5,Fair,978-8273045691,2012,Hardcover
+Westside_Memorial,B5,Good,978-7361459820,2016,Paperback
+Highland,C1,Excellent,978-8270345691,2021,Hardcover
+Brookdale,D4,Poor,978-7361459280,2009,Paperback
