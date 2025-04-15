@@ -123,6 +123,10 @@
             filter: brightness(1.2);
         }
         
+        .week-card p {
+            line-height: 1.6;
+        }
+        
         .click-me {
             display: inline-block;
             margin-top: 3rem;
@@ -250,26 +254,6 @@
             font-size: 0.9rem;
             transition: all 0.3s ease;
         }
-
-        /* Toast notification styles */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .toast.show {
-            opacity: 1;
-        }
         
         @keyframes glow {
             0% {
@@ -345,9 +329,13 @@
                     <h3>Week 3</h3>
                     <p>Windows Command Line Dungeon Crawl</p>
                 </div>
-                <div class="week-card" id="week4-card">
+                <div class="week-card">
                     <h3>Week 4</h3>
-                    <p>Download CSV Data Files</p>
+                    <p>
+                        <a href="Visualizing.pdf" target="_blank">Virtual Library & Idea Sourcing</a><br>
+                        <a href="data.csv" target="_blank">Dataset 1</a><br>
+                        <a href="analysis.csv" target="_blank">Dataset 2</a>
+                    </p>
                 </div>
                 <div class="week-card">
                     <h3>Week 5</h3>
@@ -382,9 +370,6 @@
     <div id="content" style="display: none;">
         <!-- This is where your additional content would go -->
     </div>
-
-    <!-- Toast notification for downloads -->
-    <div class="toast" id="toast">Files are downloading...</div>
     
     <footer>
         <div class="theme-switch-wrapper">
@@ -396,24 +381,6 @@
         </div>
         <div>&copy; 2025 Islombek - GitHub Portfolio</div>
     </footer>
-    
-    <!-- Define your CSV data for download -->
-    <script>
-        // CSV content for Library_Name.csv
-        const csvData1 = `Library_Name,Shelf_Location,Condition,ISBN,Purchase_Year,Cover_Type
-Library 1,A1,Good,978-1234567890,2020,Hardcover
-Library 2,B2,Excellent,978-0987654321,2021,Paperback
-Library 3,C3,Fair,978-1122334455,2019,Hardcover`;
-
-        // CSV content for Author 1.csv
-        const csvData2 = `Author,Birth Year,Nationality
-Author 1,1950,American
-Author 2,1965,British
-Author 3,1978,Canadian`;
-        
-        // Placeholder for your third CSV file
-        const csvData3 = `Your third CSV file content will go here`;
-    </script>
     
     <script>
         // Add particles effect
@@ -453,37 +420,6 @@ Author 3,1978,Canadian`;
                 } else {
                     content.style.display = 'none';
                 }
-            });
-            
-            // Helper function to create download
-            function downloadCSV(data, filename) {
-                const blob = new Blob([data], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            }
-            
-            // Set up the Week 4 card download functionality
-            document.getElementById('week4-card').addEventListener('click', function() {
-                // Show toast notification
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                
-                // Download all three CSV files
-                setTimeout(() => downloadCSV(csvData1, 'Library_Name.csv'), 300);
-                setTimeout(() => downloadCSV(csvData2, 'Author 1.csv'), 600);
-                setTimeout(() => downloadCSV(csvData3, 'Reading_Stats.csv'), 900);
-                
-                // Hide toast after a delay
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
             });
             
             // Theme switch functionality
