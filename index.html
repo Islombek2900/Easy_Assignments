@@ -370,6 +370,16 @@
                 <div id="grade-display" class="grade-display">
                     Loading your grade data...
                 </div>
+                <div style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
+                    If the grade doesn't load, you might need to update your Google Apps Script by following these steps:
+                </div>
+                <ol style="text-align: left; margin: 10px auto; max-width: 450px; font-size: 0.9rem; opacity: 0.8;">
+                    <li>Go to your Google Apps Script editor</li>
+                    <li>Add this line at the end of your doGet() function:
+                        <div style="background: rgba(0,0,0,0.2); padding: 5px; margin: 5px 0; border-radius: 5px; font-family: monospace;">return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);</div>
+                    </li>
+                    <li>Deploy again as a new web app version</li>
+                </ol>
             </div>
 
             <div class="weeks-container">
@@ -540,43 +550,100 @@
             // Add a random parameter to avoid caching
             const urlWithVersion = scriptUrl + '?v=' + new Date().getTime();
             
-            fetch(urlWithVersion)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Format the grade display
-                    let letterGradeColor = 'var(--primary)';
-                    
-                    // Set color based on grade
-                    if (data.percentage >= 90) {
-                        letterGradeColor = '#4caf50'; // A - Green
-                    } else if (data.percentage >= 80) {
-                        letterGradeColor = '#8bc34a'; // B - Light Green
-                    } else if (data.percentage >= 70) {
-                        letterGradeColor = '#ffc107'; // C - Yellow
-                    } else if (data.percentage >= 60) {
-                        letterGradeColor = '#ff9800'; // D - Orange
-                    } else {
-                        letterGradeColor = '#f44336'; // F - Red
-                    }
-                    
-                    // Update the grade display with a nice format
+            // Update the display to show we're trying to fetch data
+            document.getElementById('grade-display').innerHTML = 'Connecting to grade data...';
+            
+            // Try JSONP approach (more compatible with Google Apps Script)
+            const script = document.createElement('script');
+            script.src = urlWithVersion + '&callback=handleGradeData';
+            document.body.appendChild(script);
+            
+            // Set a timeout to handle if the script doesn't load
+            setTimeout(function() {
+                if (document.getElementById('grade-display').innerHTML === 'Connecting to grade data...') {
                     document.getElementById('grade-display').innerHTML = `
-                        <span class="grade-percentage">${data.percentage.toFixed(2)}%</span>
-                        <span class="grade-letter" style="background: ${letterGradeColor}">${data.letterGrade}</span>
-                        <div class="grade-details">
-                            You've earned ${data.pointsEarned} out of ${data.pointsPossible} possible points
+                        <div style="color: #f44336;">Unable to connect to the grade calculator.</div>
+                        <div style="margin-top: 10px; font-size: 0.9rem;">
+                            This might be due to:
+                            <ul style="text-align: left; margin: 10px 0;">
+                                <li>Script permissions not set to "Anyone with the link"</li>
+                                <li>The web app not being properly deployed</li>
+                            </ul>
+                            <div style="margin-top: 10px;">
+                                <button onclick="tryDirectAccess()" style="
+                                    background: var(--primary); 
+                                    color: white; 
+                                    border: none; 
+                                    padding: 8px 15px; 
+                                    border-radius: 5px; 
+                                    cursor: pointer;
+                                    font-family: 'Poppins', sans-serif;">
+                                    Open Grade Calculator Directly
+                                </button>
+                            </div>
                         </div>
                     `;
-                })
-                .catch(error => {
-                    console.error('Error fetching grade data:', error);
-                    document.getElementById('grade-display').innerHTML = 'Error loading grades. Please try again later.';
-                });
+                }
+            }, 5000);
+        }
+        
+        // Function to handle the JSONP response
+        function handleGradeData(data) {
+            try {
+                // For debugging
+                console.log("Received data:", data);
+                
+                // Format the grade display
+                let letterGradeColor = 'var(--primary)';
+                
+                // Set color based on grade
+                if (data.percentage >= 90) {
+                    letterGradeColor = '#4caf50'; // A - Green
+                } else if (data.percentage >= 80) {
+                    letterGradeColor = '#8bc34a'; // B - Light Green
+                } else if (data.percentage >= 70) {
+                    letterGradeColor = '#ffc107'; // C - Yellow
+                } else if (data.percentage >= 60) {
+                    letterGradeColor = '#ff9800'; // D - Orange
+                } else {
+                    letterGradeColor = '#f44336'; // F - Red
+                }
+                
+                // Update the grade display with a nice format
+                document.getElementById('grade-display').innerHTML = `
+                    <span class="grade-percentage">${data.percentage.toFixed(2)}%</span>
+                    <span class="grade-letter" style="background: ${letterGradeColor}">${data.letterGrade}</span>
+                    <div class="grade-details">
+                        You've earned ${data.pointsEarned} out of ${data.pointsPossible} possible points
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error processing grade data:', error);
+                document.getElementById('grade-display').innerHTML = `
+                    <div style="color: #f44336;">Error processing grade data.</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">
+                        The script is responding but the data format may be incorrect.
+                        <button onclick="tryDirectAccess()" style="
+                            display: block;
+                            margin: 15px auto 0;
+                            background: var(--primary); 
+                            color: white; 
+                            border: none; 
+                            padding: 8px 15px; 
+                            border-radius: 5px; 
+                            cursor: pointer;
+                            font-family: 'Poppins', sans-serif;">
+                            Open Grade Calculator Directly
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Function to open the grade calculator directly
+        function tryDirectAccess() {
+            window.open('https://script.google.com/macros/s/AKfycbxVQBm5HqBEdXgwm_NNbW4AzK9azq_5OSw_zyUIdPqqwiVHP4wg5ap6hJ8_lZqkuVyL/exec', '_blank');
+        }
         }
     </script>
 </body>
