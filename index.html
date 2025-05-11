@@ -240,6 +240,52 @@
             transition: all 0.3s ease;
         }
         
+        /* Grade Calculator Styles */
+        .grade-calculator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+            min-width: 180px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        [data-theme="light"] .grade-calculator {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #1e293b;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .grade-calculator h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        .grade-percentage {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .grade-ratio {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
         @keyframes glow {
             0% {
                 text-shadow: 0 0 5px rgba(74, 134, 232, 0.8);
@@ -290,10 +336,28 @@
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 1rem;
             }
+            
+            .grade-calculator {
+                top: 10px;
+                right: 10px;
+                padding: 15px;
+                min-width: 140px;
+            }
+            
+            .grade-percentage {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Grade Calculator -->
+    <div class="grade-calculator">
+        <h3>Calculated Grade</h3>
+        <div class="grade-percentage">78.50%</div>
+        <div class="grade-ratio">31.4 / 40.0</div>
+    </div>
+    
     <div class="container">
         <header>
             <h1 class="floating">Islombek</h1>
@@ -317,6 +381,7 @@
                 <div class="week-card">
                     <h3>Week 4</h3>
                     <p><a href="https://drive.google.com/drive/folders/189gFulOlLpcNADIhiMFAipUOR3_CQO0a?usp=sharing" target="_blank">Virtual Library & Idea Sourcing</a></p>
+
                 </div>
                 <div class="week-card">
                     <h3>Week 5</h3>
@@ -343,11 +408,8 @@
                     <p>Not Decided</p>
                 </div>
             </div>
-
-            <!-- Add your Grade Calculator link here -->
-            <a href="https://script.google.com/macros/s/AKfycbxwNGoV8hmQ4NpGcJw7A43-iA3h0gT36YBnOhsDajs_9niSZn-CMuQ0qTHgcKcnfGEV/exec" class="click-button">Grade Calculator</a>
-
-            <a href="https://github.com/islombek" class="click-me" target="_blank">Click me to visit my GitHub</a>
+            
+            <a href="#content" class="click-me">Click Me</a>
         </main>
     </div>
     
@@ -441,6 +503,9 @@
                     themeLabel.textContent = 'Switch to Dark Mode';
                 }
             }
+            
+            // Calculate grade based on completed assignments
+            calculateGrade();
         });
         
         function createParticle(container) {
@@ -460,8 +525,42 @@
             
             container.appendChild(particle);
         }
+        
+        // Function to calculate and update grade
+        function calculateGrade() {
+            // Define assignment weights and status
+            const assignments = [
+                { name: "Week 1", weight: 5, status: "completed" },   // Portfolio Website
+                { name: "Week 2", weight: 5, status: "completed" },   // Identity Check
+                { name: "Week 3", weight: 5, status: "completed" },   // Dungeon Crawl
+                { name: "Week 4", weight: 5, status: "completed" },   // Virtual Library
+                { name: "Week 5", weight: 5, status: "completed" },   // Catchup
+                { name: "Week 6", weight: 5, status: "in-progress" }, // Cryptography
+                { name: "Week 7", weight: 5, status: "in-progress" }, // App Script
+                { name: "Week 8", weight: 10, status: "pending" },    // Midterm Exam (higher weight)
+                { name: "Week 9", weight: 5, status: "pending" },     // Not Decided
+                { name: "Week 10", weight: 5, status: "pending" }     // Not Decided
+            ];
+            
+            // Calculate total points and earned points
+            const totalPoints = assignments.reduce((sum, assignment) => sum + assignment.weight, 0);
+            let earnedPoints = 0;
+            
+            assignments.forEach(assignment => {
+                if (assignment.status === "completed") {
+                    earnedPoints += assignment.weight;
+                } else if (assignment.status === "in-progress") {
+                    earnedPoints += assignment.weight * 0.7; // 70% credit for in-progress
+                }
+            });
+            
+            // Calculate percentage
+            const percentage = (earnedPoints / totalPoints) * 100;
+            
+            // Update the grade calculator display
+            document.querySelector('.grade-percentage').textContent = percentage.toFixed(2) + '%';
+            document.querySelector('.grade-ratio').textContent = earnedPoints.toFixed(1) + ' / ' + totalPoints.toFixed(1);
+        }
     </script>
 </body>
 </html>
-
-
