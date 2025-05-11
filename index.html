@@ -504,8 +504,8 @@
                 }
             }
             
-            // Calculate grade based on completed assignments
-            calculateGrade();
+            // Fetch grade data from Google Apps Script
+            fetchGradeData();
         });
         
         function createParticle(container) {
@@ -526,40 +526,60 @@
             container.appendChild(particle);
         }
         
-        // Function to calculate and update grade
-        function calculateGrade() {
-            // Define assignment weights and status
-            const assignments = [
-                { name: "Week 1", weight: 5, status: "completed" },   // Portfolio Website
-                { name: "Week 2", weight: 5, status: "completed" },   // Identity Check
-                { name: "Week 3", weight: 5, status: "completed" },   // Dungeon Crawl
-                { name: "Week 4", weight: 5, status: "completed" },   // Virtual Library
-                { name: "Week 5", weight: 5, status: "completed" },   // Catchup
-                { name: "Week 6", weight: 5, status: "in-progress" }, // Cryptography
-                { name: "Week 7", weight: 5, status: "in-progress" }, // App Script
-                { name: "Week 8", weight: 10, status: "pending" },    // Midterm Exam (higher weight)
-                { name: "Week 9", weight: 5, status: "pending" },     // Not Decided
-                { name: "Week 10", weight: 5, status: "pending" }     // Not Decided
-            ];
+        // Function to fetch grade data from Google Apps Script
+        function fetchGradeData() {
+            const appScriptUrl = 'https://script.google.com/macros/s/AKfycbx6h7346juxrVTatAfDywzY8_jJCsD5mBHbLvGvGprm46xXBW8liOPyM8Vj4g9ibAmB/exec';
             
-            // Calculate total points and earned points
-            const totalPoints = assignments.reduce((sum, assignment) => sum + assignment.weight, 0);
-            let earnedPoints = 0;
+            // Show loading state
+            document.querySelector('.grade-percentage').textContent = 'Loading...';
+            document.querySelector('.grade-ratio').textContent = '';
             
-            assignments.forEach(assignment => {
-                if (assignment.status === "completed") {
-                    earnedPoints += assignment.weight;
-                } else if (assignment.status === "in-progress") {
-                    earnedPoints += assignment.weight * 0.7; // 70% credit for in-progress
+            // Fetch data from the Google Apps Script
+            fetch(appScriptUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update the grade calculator with data from the API
+                    updateGradeDisplay(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching grade data:', error);
+                    document.querySelector('.grade-percentage').textContent = 'Error';
+                    document.querySelector('.grade-ratio').textContent = 'Could not load grade data';
+                });
+        }
+        
+        // Function to update the grade display with data from API
+        function updateGradeDisplay(data) {
+            // Check if the data has the expected format
+            if (data && typeof data.percentage === 'number' && data.earnedPoints !== undefined && data.totalPoints !== undefined) {
+                // Update the grade calculator display
+                document.querySelector('.grade-percentage').textContent = data.percentage.toFixed(2) + '%';
+                document.querySelector('.grade-ratio').textContent = data.earnedPoints.toFixed(1) + ' / ' + data.totalPoints.toFixed(1);
+                
+                // Optional: Add color coding based on grade percentage
+                const gradeElement = document.querySelector('.grade-percentage');
+                if (data.percentage >= 90) {
+                    gradeElement.style.color = '#4CAF50'; // Green for A
+                } else if (data.percentage >= 80) {
+                    gradeElement.style.color = '#8BC34A'; // Light green for B
+                } else if (data.percentage >= 70) {
+                    gradeElement.style.color = '#FFC107'; // Amber for C
+                } else if (data.percentage >= 60) {
+                    gradeElement.style.color = '#FF9800'; // Orange for D
+                } else {
+                    gradeElement.style.color = '#F44336'; // Red for F
                 }
-            });
-            
-            // Calculate percentage
-            const percentage = (earnedPoints / totalPoints) * 100;
-            
-            // Update the grade calculator display
-            document.querySelector('.grade-percentage').textContent = percentage.toFixed(2) + '%';
-            document.querySelector('.grade-ratio').textContent = earnedPoints.toFixed(1) + ' / ' + totalPoints.toFixed(1);
+            } else {
+                // Fallback if data is not in expected format
+                document.querySelector('.grade-percentage').textContent = 'N/A';
+                document.querySelector('.grade-ratio').textContent = 'Data format error';
+                console.error('Unexpected data format:', data);
+            }
         }
     </script>
 </body>
