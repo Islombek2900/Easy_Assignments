@@ -5,12 +5,340 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Islombek's GitHub Page</title>
     <style>
-        /* [Previous CSS remains exactly the same] */
-        /* ... all your existing style rules ... */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --primary: #4a86e8;
+            --secondary: #6c63ff;
+            --background: #0d1117;
+            --text: #ffffff;
+            --accent: #f9a826;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --footer-text: rgba(255, 255, 255, 0.7);
+            --switch-body: #333;
+            --switch-handle: #f9a826;
+        }
+        
+        [data-theme="light"] {
+            --primary: #2563eb;
+            --secondary: #4f46e5;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --accent: #ea580c;
+            --card-bg: rgba(0, 0, 0, 0.05);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --footer-text: rgba(0, 0, 0, 0.7);
+            --switch-body: #e4e4e7;
+            --switch-handle: #ea580c;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        header {
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            animation: glow 2s ease-in-out infinite alternate;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .id-number {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+            opacity: 0.8;
+            animation: fadeIn 1.5s ease-in;
+        }
+        
+        .weeks-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .week-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+        }
+        
+        .week-card:hover {
+            transform: translateY(-10px);
+            background: var(--card-bg);
+            filter: brightness(1.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .week-card h3 {
+            margin-top: 0;
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+        
+        .week-card p {
+            margin-bottom: 0;
+            font-weight: 300;
+        }
+        
+        .tool-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .click-me {
+            display: inline-block;
+            margin-top: 3rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .click-me:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .click-me::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            z-index: -1;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+        
+        .click-me:hover::before {
+            opacity: 1;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        footer {
+            margin-top: auto;
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--footer-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        /* Grade Calculator Styles */
+        .grade-calculator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+            min-width: 180px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        [data-theme="light"] .grade-calculator {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #1e293b;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .grade-calculator h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        .grade-percentage {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .grade-ratio {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .refresh-button {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-button:hover {
+            transform: rotate(180deg);
+        }
+        
+        /* Loading animation for grade calculator */
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes glow {
+            0% {
+                text-shadow: 0 0 5px rgba(74, 134, 232, 0.8);
+            }
+            100% {
+                text-shadow: 0 0 15px rgba(74, 134, 232, 0.8), 0 0 30px rgba(74, 134, 232, 0.4);
+            }
+        }
+        
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 0.8;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .id-number {
+                font-size: 1.2rem;
+            }
+            
+            .weeks-container {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 1rem;
+            }
+            
+            .grade-calculator {
+                top: 10px;
+                right: 10px;
+                padding: 15px;
+                min-width: 140px;
+            }
+            
+            .grade-percentage {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Grade Calculator with new Apps Script URL -->
+    <!-- Grade Calculator -->
     <div class="grade-calculator">
         <h3>Calculated Grade</h3>
         <div class="grade-percentage">Loading...</div>
@@ -21,62 +349,160 @@
     </div>
     
     <div class="container">
-        <!-- [Rest of your HTML remains the same] -->
-        <!-- ... all your existing content ... -->
+        <header>
+            <h1 class="floating">Islombek</h1>
+            <div class="id-number">ID: 2417852</div>
+        </header>
+        
+        <main>
+            <div class="weeks-container">
+                <div class="week-card">
+                    <h3>Week 1</h3>
+                    <p>Portfolio Website Creation</p>
+                </div>
+                <div class="week-card">
+                    <h3>Week 2</h3>
+                    <p>Identity Check, Scammer?!</p>
+                </div>
+                <div class="week-card">
+                    <h3>Week 3</h3>
+                    <p>Windows Command Line Dungeon Crawl</p>
+                </div>
+                <div class="week-card">
+                    <h3>Week 4</h3>
+                    <p><a href="https://drive.google.com/drive/folders/189gFulOlLpcNADIhiMFAipUOR3_CQO0a?usp=sharing" target="_blank">Virtual Library & Idea Sourcing</a></p>
+                </div>
+                <div class="week-card">
+                    <h3>Week 5</h3>
+                    <p>Catchup</p>
+                </div>
+                <div class="week-card">
+                    <h3>Week 6</h3>
+                    <p>Cryptography Project</p>
+                    <a href="https://behruz1262.github.io/encryption-decryption-tool" target="_blank" class="tool-btn">Cryptography Tool</a>
+                    <a href="https://docs.google.com/document/d/1rSWoq1R1PkVJSU4qVY4_wjUcbzfYrW4Q_xIb2JTo584/edit?usp=sharing" target="_blank" class="tool-btn">Cryptography Documentation</a>
+                </div>
+                <div class="week-card">
+                    <h3>Week 7</h3>
+                    <p><a href="https://drive.google.com/drive/folders/1hqjHIhsp7xcraBma8eig7hM-cq29HB4n?usp=sharing" target="_blank">App Script: Backend Simulation</a></p>
+                </div>
+                <div class="week-card">
+                    <h3>Week 8</h3>
+                    <p>Midterm Exam</p>
+                </div>
+                <div class="week-card">
+                    <h3>Week 9</h3>
+                    <p>Not Decided</p>
+                </div>
+                <div class="week-card">
+                    <h3>Week 10</h3>
+                    <p>Not Decided</p>
+                </div>
+            </div>
+            
+            <a href="#content" class="click-me">Click Me</a>
+        </main>
     </div>
-
+    
+    <div id="content" style="display: none;">
+        <!-- Hidden content area -->
+    </div>
+    
+    <footer>
+        <div class="theme-switch-wrapper">
+            <div class="theme-switch" id="theme-switch">
+                <div class="switch-plate"></div>
+                <div class="switch-handle"></div>
+            </div>
+            <div class="theme-label">Switch to Light Mode</div>
+        </div>
+        <div>&copy; 2025 Islombek - GitHub Portfolio</div>
+    </footer>
+    
     <script>
-        // Updated JavaScript with new Apps Script URL
+        // Improved Grade Calculator Functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // [All your existing DOMContentLoaded code remains the same until the fetchGradeData function]
+            // Your new Apps Script URL
+            const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7_qtJ2m0ihXe709ieQVSsd3YRy8J9qkEQ-wAUpniC-6sAnmvGWRSWlcXE32iPPBpF/exec';
             
-            // Updated fetchGradeData function with new URL
-            function fetchGradeData() {
-                const gradePercentage = document.querySelector('.grade-percentage');
-                const gradeRatio = document.querySelector('.grade-ratio');
+            // Initialize grade calculator
+            const gradeCalculator = {
+                elements: {
+                    percentage: document.querySelector('.grade-percentage'),
+                    ratio: document.querySelector('.grade-ratio'),
+                    refreshBtn: document.querySelector('.refresh-button'),
+                    calculator: document.querySelector('.grade-calculator')
+                },
                 
-                gradePercentage.textContent = 'Loading...';
-                gradeRatio.innerHTML = '<div class="loading-spinner"></div>';
+                init: function() {
+                    this.fetchGradeData();
+                    this.elements.refreshBtn.addEventListener('click', () => this.fetchGradeData());
+                },
                 
-                // YOUR NEW APPS SCRIPT URL
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbz7_qtJ2m0ihXe709ieQVSsd3YRy8J9qkEQ-wAUpniC-6sAnmvGWRSWlcXE32iPPBpF/exec';
+                fetchGradeData: function() {
+                    this.showLoadingState();
+                    
+                    // Add cache-busting parameter
+                    const url = `${APP_SCRIPT_URL}?t=${Date.now()}`;
+                    
+                    fetch(url)
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (this.validateGradeData(data)) {
+                                this.updateDisplay(data);
+                            } else {
+                                throw new Error('Invalid data format');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching grade data:', error);
+                            this.showErrorState();
+                            // Retry after 5 seconds
+                            setTimeout(() => this.fetchGradeData(), 5000);
+                        });
+                },
                 
-                fetch(`${scriptUrl}?t=${Date.now()}`)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network error');
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data && typeof data.percentage === 'number') {
-                            updateGradeDisplay(data);
-                        } else {
-                            throw new Error('Invalid data format');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        gradePercentage.textContent = 'Error';
-                        gradeRatio.textContent = 'Try again later';
-                        setTimeout(fetchGradeData, 5000);
-                    });
-            }
-
-            // Update grade display function (unchanged)
-            function updateGradeDisplay(data) {
-                document.querySelector('.grade-percentage').textContent = data.percentage.toFixed(2) + '%';
-                document.querySelector('.grade-ratio').textContent = 
-                    data.earnedPoints.toFixed(1) + ' / ' + data.totalPoints.toFixed(1);
-                colorCodeGrade(data.percentage);
-            }
-
-            // [Rest of your existing JavaScript remains the same]
-            // ... all your other functions and event listeners ...
+                validateGradeData: function(data) {
+                    return data && 
+                           typeof data.percentage === 'number' && 
+                           typeof data.earnedPoints === 'number' && 
+                           typeof data.totalPoints === 'number';
+                },
+                
+                updateDisplay: function(data) {
+                    this.elements.percentage.textContent = `${data.percentage.toFixed(2)}%`;
+                    this.elements.ratio.textContent = `${data.earnedPoints.toFixed(1)} / ${data.totalPoints.toFixed(1)}`;
+                    this.colorCodeGrade(data.percentage);
+                    
+                    // Add visual feedback
+                    this.elements.calculator.style.animation = 'none';
+                    setTimeout(() => {
+                        this.elements.calculator.style.animation = 'fadeIn 0.5s ease';
+                    }, 10);
+                },
+                
+                colorCodeGrade: function(percentage) {
+                    let gradient;
+                    if (percentage >= 90) gradient = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+                    else if (percentage >= 80) gradient = 'linear-gradient(90deg, #8BC34A, #CDDC39)';
+                    else if (percentage >= 70) gradient = 'linear-gradient(90deg, #FFC107, #FF9800)';
+                    else if (percentage >= 60) gradient = 'linear-gradient(90deg, #FF9800, #FF5722)';
+                    else gradient = 'linear-gradient(90deg, #F44336, #D32F2F)';
+                    
+                    this.elements.percentage.style.background = gradient;
+                },
+                
+                showLoadingState: function() {
+                    this.elements.percentage.textContent = 'Loading...';
+                    this.elements.ratio.innerHTML = '<div class="loading-spinner"></div>';
+                },
+                
+                showErrorState: function() {
+                    this.elements.percentage.textContent = 'Error';
+                    this.elements.ratio.textContent = 'Try again';
+                }
+            };
             
-            // Initialize grade data
-            fetchGradeData();
-        });
-
-        // [All other supporting functions remain unchanged]
-    </script>
-</body>
-</html>
