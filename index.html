@@ -275,6 +275,8 @@
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            transform: translateY(0);
+            animation: fadeIn 0.5s ease;
         }
         
         [data-theme="light"] .grade-calculator {
@@ -322,6 +324,22 @@
         
         .refresh-button:hover {
             transform: rotate(180deg);
+        }
+        
+        /* Loading animation for grade calculator */
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         @keyframes glow {
@@ -392,8 +410,10 @@
     <!-- Grade Calculator -->
     <div class="grade-calculator">
         <h3>Calculated Grade</h3>
-        <div class="grade-percentage">78.50%</div>
-        <div class="grade-ratio">31.4 / 40.0</div>
+        <div class="grade-percentage">Loading...</div>
+        <div class="grade-ratio">
+            <div class="loading-spinner"></div>
+        </div>
         <button class="refresh-button" title="Refresh grade data">↻</button>
     </div>
     
@@ -500,6 +520,7 @@
                     content.innerHTML = `
                         <div class="container" style="animation: fadeIn 1s ease;">
                             <h2 style="color: var(--accent);">Welcome to My GitHub Portfolio!</h2>
+                            <p>Check out my grade calculator in the top-right corner, powered by Google Sheets and Apps Script!</p>
                         </div>
                     `;
                     // Smooth scroll to content
@@ -548,6 +569,12 @@
             // Setup refresh button
             document.querySelector('.refresh-button').addEventListener('click', function() {
                 fetchGradeData();
+                
+                // Add animation to refresh button
+                this.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    this.style.transform = 'rotate(0deg)';
+                }, 500);
             });
             
             // Initialize grade data
@@ -574,27 +601,33 @@
         
         // Function to fetch grade data from Google Apps Script with improved error handling
         function fetchGradeData() {
-            // Modified URL with cache-busting parameter to avoid cached responses
-            const appScriptUrl = 'https://script.google.com/macros/s/AKfycbx6h7346juxrVTatAfDywzY8_jJCsD5mBHbLvGvGprm46xXBW8liOPyM8Vj4g9ibAmB/exec?timestamp=' + Date.now();
-            
             // Show loading state
             document.querySelector('.grade-percentage').textContent = 'Loading...';
-            document.querySelector('.grade-ratio').textContent = '';
+            document.querySelector('.grade-ratio').innerHTML = '<div class="loading-spinner"></div>';
             
-            // Use local fallback data if fetch fails after timeout
+            // Use the Apps Script URL from your library
+            // This URL is the one you provided in your request
+            const appScriptUrl = 'https://script.google.com/macros/s/AKfycbx6h7346juxrVTatAfDywzY8_jJCsD5mBHbLvGvGprm46xXBW8liOPyM8Vj4g9ibAmB/exec';
+            
+            // Add a timestamp parameter to prevent caching
+            const urlWithTimestamp = `${appScriptUrl}?timestamp=${Date.now()}`;
+            
+            // Set timeout for the request
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Request timed out')), 5000);
+                setTimeout(() => reject(new Error('Request timed out')), 8000);
             });
             
             // Race between fetch and timeout
             Promise.race([
-                fetch(appScriptUrl, {
+                fetch(urlWithTimestamp, {
                     method: 'GET',
-                    mode: 'cors', // Adding CORS mode explicitly
+                    mode: 'cors',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
-                    }
+                    },
+                    // Important for CORS requests to work with credentials
+                    credentials: 'omit'
                 }),
                 timeoutPromise
             ])
@@ -605,18 +638,72 @@
                 return response.json();
             })
             .then(data => {
+                console.log('Received data:', data);
                 // Update the grade calculator with data from the API
                 updateGradeDisplay(data);
             })
             .catch(error => {
                 console.error('Error fetching grade data:', error);
-                // Fall back to static data
-                useFallbackGradeData();
+                // Show error message
+                document.querySelector('.grade-percentage').textContent = 'Error';
+                document.querySelector('.grade-ratio').textContent = 'Failed to load data';
+                
+                // Try alternative method using JSONP after a short delay
+                setTimeout(() => {
+                    tryJsonpFallback();
+                }, 1000);
             });
+        }
+        
+        // Fallback method using JSONP approach which can sometimes bypass CORS issues
+        function tryJsonpFallback() {
+            console.log('Trying JSONP fallback...');
+            
+            // Create a temporary callback function name
+            const callbackName = 'gradeDataCallback_' + Math.round(Math.random() * 1000000);
+            
+            // Create global callback function
+            window[callbackName] = function(data) {
+                console.log('JSONP callback received data:', data);
+                updateGradeDisplay(data);
+                
+                // Clean up - remove script and delete callback
+                document.body.removeChild(script);
+                delete window[callbackName];
+            };
+            
+            // Create script element with JSONP URL
+            const script = document.createElement('script');
+            script.src = `https://script.google.com/macros/s/AKfycbx6h7346juxrVTatAfDywzY8_jJCsD5mBHbLvGvGprm46xXBW8liOPyM8Vj4g9ibAmB/exec?callback=${callbackName}&timestamp=${Date.now()}`;
+            
+            // Set timeout function
+            const timeout = setTimeout(() => {
+                console.log('JSONP request timed out');
+                // If the script fails to load or times out, use fallback data
+                if (document.body.contains(script)) {
+                    document.body.removeChild(script);
+                }
+                delete window[callbackName];
+                useFallbackGradeData();
+            }, 5000);
+            
+            // Handle errors
+            script.onerror = function() {
+                console.error('JSONP script error');
+                clearTimeout(timeout);
+                document.body.removeChild(script);
+                delete window[callbackName];
+                useFallbackGradeData();
+            };
+            
+            // Add script to document to start request
+            document.body.appendChild(script);
         }
         
         // Function to use fallback grade data when fetch fails
         function useFallbackGradeData() {
+            console.log('Using fallback grade data');
+            
             // Use static fallback data
             const fallbackData = {
                 percentage: 78.5,
@@ -633,6 +720,8 @@
         
         // Function to update the grade display with data
         function updateGradeDisplay(data) {
+            console.log('Updating grade display with data:', data);
+            
             // Check if the data has the expected format
             if (data && typeof data.percentage === 'number' && data.earnedPoints !== undefined && data.totalPoints !== undefined) {
                 // Update the grade calculator display
@@ -641,11 +730,49 @@
                 
                 // Color coding based on grade percentage
                 colorCodeGrade(data.percentage);
+                
+                // Add animation to show successful update
+                const calculator = document.querySelector('.grade-calculator');
+                calculator.style.animation = 'none';
+                setTimeout(() => {
+                    calculator.style.animation = 'fadeIn 0.5s ease';
+                }, 10);
             } else {
+                console.error('Unexpected data format:', data);
+                // Try to extract data if it's in a different format
+                if (data) {
+                    if (typeof data === 'object') {
+                        // Look for any properties that might contain our data
+                        const keys = Object.keys(data);
+                        console.log('Available keys:', keys);
+                        
+                        // Try to make sense of what we got
+                        let percentage, earnedPoints, totalPoints;
+                        
+                        // Look for percentage field
+                        for (const key of keys) {
+                            if (typeof data[key] === 'number' && (key.includes('perc') || key.includes('grade'))) {
+                                percentage = data[key];
+                            } else if (typeof data[key] === 'number' && (key.includes('earn') || key.includes('got'))) {
+                                earnedPoints = data[key];
+                            } else if (typeof data[key] === 'number' && (key.includes('total'))) {
+                                totalPoints = data[key];
+                            }
+                        }
+                        
+                        if (percentage !== undefined && earnedPoints !== undefined && totalPoints !== undefined) {
+                            document.querySelector('.grade-percentage').textContent = percentage.toFixed(2) + '%';
+                            document.querySelector('.grade-ratio').textContent = earnedPoints.toFixed(1) + ' / ' + totalPoints.toFixed(1);
+                            colorCodeGrade(percentage);
+                            return;
+                        }
+                    }
+                }
+                
                 // Fallback if data is not in expected format
                 document.querySelector('.grade-percentage').textContent = 'N/A';
                 document.querySelector('.grade-ratio').textContent = 'Data format error';
-                console.error('Unexpected data format:', data);
+                useFallbackGradeData();
             }
         }
         
