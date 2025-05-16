@@ -447,6 +447,7 @@
       <div class="percentage">--%</div>
       <div class="points">-- / -- points</div>
       <button class="refresh-btn">↻ Refresh</button>
+      <div class="grade-status" style="font-size: 0.8rem; margin-top: 10px;"></div>
     </div>
     
     <script>
@@ -527,34 +528,55 @@
             
             // Grade functionality
             const gradeScriptURL = 'https://script.google.com/macros/s/AKfycbxnggmUj9MxFIS2VctiyuMp2np4rwtj_JPXDBPUem2-I1pQ3_7Ybx9p4zY48E5NXMuF/exec';
-            const percentageElement = document.querySelector('.percentage');
-            const pointsElement = document.querySelector('.points');
-            const refreshBtn = document.querySelector('.refresh-btn');
             
-            // Function to fetch grades
+            // Function to fetch grades (using JSONP to avoid CORS issues)
             function fetchGrades() {
+                const percentageElement = document.querySelector('.percentage');
+                const pointsElement = document.querySelector('.points');
+                
                 percentageElement.textContent = 'Loading...';
                 pointsElement.textContent = '';
                 
-                fetch(gradeScriptURL)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Update the grade display with the fetched data
+                // Create a temporary function to handle the JSONP callback
+                window.handleGradeResponse = function(data) {
+                    if (data && data.percentage !== undefined) {
                         percentageElement.textContent = `${data.percentage}%`;
                         pointsElement.textContent = `${data.points} / ${data.total} points`;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching grades:', error);
+                    } else {
+                        percentageElement.textContent = '--';
+                        pointsElement.textContent = 'No data available';
+                    }
+                    // Remove the script tag after execution
+                    const scriptElement = document.getElementById('gradeScript');
+                    if (scriptElement) {
+                        scriptElement.remove();
+                    }
+                };
+                
+                // JSONP implementation - create a script tag to load the data
+                const script = document.createElement('script');
+                script.id = 'gradeScript';
+                script.src = `${gradeScriptURL}?callback=handleGradeResponse&studentId=2417852&t=${new Date().getTime()}`;
+                document.body.appendChild(script);
+                
+                // Set a timeout to handle failed requests
+                setTimeout(() => {
+                    if (percentageElement.textContent === 'Loading...') {
                         percentageElement.textContent = 'Error!';
-                        pointsElement.textContent = 'Could not load grades';
-                    });
+                        pointsElement.textContent = 'Request timed out';
+                        const scriptElement = document.getElementById('gradeScript');
+                        if (scriptElement) {
+                            scriptElement.remove();
+                        }
+                    }
+                }, 10000); // 10 second timeout
             }
             
-            // Add event listener to the refresh button
-            refreshBtn.addEventListener('click', fetchGrades);
+            // Add event listener to refresh button
+            document.querySelector('.refresh-btn').addEventListener('click', fetchGrades);
             
-            // Fetch grades on page load
-            fetchGrades();
+            // Fetch grades on page load (with a small delay to ensure DOM is ready)
+            setTimeout(fetchGrades, 1000);
         });
         
         function createParticle(container) {
