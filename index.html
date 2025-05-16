@@ -259,6 +259,63 @@
             transition: all 0.3s ease;
         }
         
+        /* Grade Box Styles */
+        .grade-box {
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            max-width: 300px;
+            margin: 2rem auto;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeIn 1s ease;
+        }
+        
+        .grade-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .grade-box h3 {
+            color: var(--accent);
+            margin-top: 0;
+        }
+        
+        .percentage {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .points {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1.2rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
         @keyframes glow {
             0% {
                 text-shadow: 0 0 5px rgba(74, 134, 232, 0.8);
@@ -384,6 +441,14 @@
         <div>&copy; 2025 Islombek - GitHub Portfolio</div>
     </footer>
     
+    <!-- Grade Box -->
+    <div class="grade-box">
+      <h3>My Current Grade</h3>
+      <div class="percentage">--%</div>
+      <div class="points">-- / -- points</div>
+      <button class="refresh-btn">↻ Refresh</button>
+    </div>
+    
     <script>
         // Add particles effect
         document.addEventListener('DOMContentLoaded', function() {
@@ -459,6 +524,37 @@
                     themeLabel.textContent = 'Switch to Dark Mode';
                 }
             }
+            
+            // Grade functionality
+            const gradeScriptURL = 'https://script.google.com/macros/s/AKfycbxnggmUj9MxFIS2VctiyuMp2np4rwtj_JPXDBPUem2-I1pQ3_7Ybx9p4zY48E5NXMuF/exec';
+            const percentageElement = document.querySelector('.percentage');
+            const pointsElement = document.querySelector('.points');
+            const refreshBtn = document.querySelector('.refresh-btn');
+            
+            // Function to fetch grades
+            function fetchGrades() {
+                percentageElement.textContent = 'Loading...';
+                pointsElement.textContent = '';
+                
+                fetch(gradeScriptURL)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the grade display with the fetched data
+                        percentageElement.textContent = `${data.percentage}%`;
+                        pointsElement.textContent = `${data.points} / ${data.total} points`;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching grades:', error);
+                        percentageElement.textContent = 'Error!';
+                        pointsElement.textContent = 'Could not load grades';
+                    });
+            }
+            
+            // Add event listener to the refresh button
+            refreshBtn.addEventListener('click', fetchGrades);
+            
+            // Fetch grades on page load
+            fetchGrades();
         });
         
         function createParticle(container) {
