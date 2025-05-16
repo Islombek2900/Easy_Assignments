@@ -259,71 +259,6 @@
             transition: all 0.3s ease;
         }
         
-        /* Grade Calculator Styles */
-        .grade-calculator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            padding: 20px;
-            color: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            text-align: center;
-            min-width: 180px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        [data-theme="light"] .grade-calculator {
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #1e293b;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        
-        .grade-calculator h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: var(--accent);
-            font-size: 1.2rem;
-        }
-        
-        .grade-percentage {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 10px 0;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .grade-ratio {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-        
-        .refresh-button {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 10px auto 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .refresh-button:hover {
-            transform: rotate(180deg);
-        }
-        
         @keyframes glow {
             0% {
                 text-shadow: 0 0 5px rgba(74, 134, 232, 0.8);
@@ -374,29 +309,10 @@
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 1rem;
             }
-            
-            .grade-calculator {
-                top: 10px;
-                right: 10px;
-                padding: 15px;
-                min-width: 140px;
-            }
-            
-            .grade-percentage {
-                font-size: 2rem;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Grade Calculator -->
-    <div class="grade-calculator">
-        <h3>Calculated Grade</h3>
-        <div class="grade-percentage">78.50%</div>
-        <div class="grade-ratio">31.4 / 40.0</div>
-        <button class="refresh-button" title="Refresh grade data">↻</button>
-    </div>
-    
     <div class="container">
         <header>
             <h1 class="floating">Islombek</h1>
@@ -420,7 +336,6 @@
                 <div class="week-card">
                     <h3>Week 4</h3>
                     <p><a href="https://drive.google.com/drive/folders/189gFulOlLpcNADIhiMFAipUOR3_CQO0a?usp=sharing" target="_blank">Virtual Library & Idea Sourcing</a></p>
-
                 </div>
                 <div class="week-card">
                     <h3>Week 5</h3>
@@ -434,7 +349,7 @@
                 </div>
                 <div class="week-card">
                     <h3>Week 7</h3>
-                     <p><a href="https://drive.google.com/drive/folders/1hqjHIhsp7xcraBma8eig7hM-cq29HB4n?usp=sharing" target="_blank">App Script: Backend Simulation</a></p>
+                    <p><a href="https://drive.google.com/drive/folders/1hqjHIhsp7xcraBma8eig7hM-cq29HB4n?usp=sharing" target="_blank">App Script: Backend Simulation</a></p>
                 </div>
                 <div class="week-card">
                     <h3>Week 8</h3>
@@ -544,14 +459,6 @@
                     themeLabel.textContent = 'Switch to Dark Mode';
                 }
             }
-            
-            // Setup refresh button
-            document.querySelector('.refresh-button').addEventListener('click', function() {
-                fetchGradeData();
-            });
-            
-            // Initialize grade data
-            fetchGradeData();
         });
         
         function createParticle(container) {
@@ -570,105 +477,6 @@
             particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
             
             container.appendChild(particle);
-        }
-        
-        // Function to fetch grade data from Google Apps Script with improved error handling
-        function fetchGradeData() {
-            // Modified URL with cache-busting parameter to avoid cached responses
-            const appScriptUrl = 'https://script.google.com/macros/s/AKfycbx6h7346juxrVTatAfDywzY8_jJCsD5mBHbLvGvGprm46xXBW8liOPyM8Vj4g9ibAmB/exec?timestamp=' + Date.now();
-            
-            // Show loading state
-            document.querySelector('.grade-percentage').textContent = 'Loading...';
-            document.querySelector('.grade-ratio').textContent = '';
-            
-            // Use local fallback data if fetch fails after timeout
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Request timed out')), 5000);
-            });
-            
-            // Race between fetch and timeout
-            Promise.race([
-                fetch(appScriptUrl, {
-                    method: 'GET',
-                    mode: 'cors', // Adding CORS mode explicitly
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                }),
-                timeoutPromise
-            ])
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Update the grade calculator with data from the API
-                updateGradeDisplay(data);
-            })
-            .catch(error => {
-                console.error('Error fetching grade data:', error);
-                // Fall back to static data
-                useFallbackGradeData();
-            });
-        }
-        
-        // Function to use fallback grade data when fetch fails
-        function useFallbackGradeData() {
-            // Use static fallback data
-            const fallbackData = {
-                percentage: 78.5,
-                earnedPoints: 31.4,
-                totalPoints: 40.0
-            };
-            
-            updateGradeDisplay(fallbackData);
-            
-            // Add note about using fallback data
-            const gradeRatio = document.querySelector('.grade-ratio');
-            gradeRatio.textContent = fallbackData.earnedPoints.toFixed(1) + ' / ' + fallbackData.totalPoints.toFixed(1) + ' (Offline data)';
-        }
-        
-        // Function to update the grade display with data
-        function updateGradeDisplay(data) {
-            // Check if the data has the expected format
-            if (data && typeof data.percentage === 'number' && data.earnedPoints !== undefined && data.totalPoints !== undefined) {
-                // Update the grade calculator display
-                document.querySelector('.grade-percentage').textContent = data.percentage.toFixed(2) + '%';
-                document.querySelector('.grade-ratio').textContent = data.earnedPoints.toFixed(1) + ' / ' + data.totalPoints.toFixed(1);
-                
-                // Color coding based on grade percentage
-                colorCodeGrade(data.percentage);
-            } else {
-                // Fallback if data is not in expected format
-                document.querySelector('.grade-percentage').textContent = 'N/A';
-                document.querySelector('.grade-ratio').textContent = 'Data format error';
-                console.error('Unexpected data format:', data);
-            }
-        }
-        
-        // Function to color code grade based on percentage
-        function colorCodeGrade(percentage) {
-            const gradeElement = document.querySelector('.grade-percentage');
-            
-            // Use CSS variables for consistent color scheme
-            if (percentage >= 90) {
-                gradeElement.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
-            } else if (percentage >= 80) {
-                gradeElement.style.background = 'linear-gradient(90deg, #8BC34A, #CDDC39)';
-            } else if (percentage >= 70) {
-                gradeElement.style.background = 'linear-gradient(90deg, #FFC107, #FF9800)';
-            } else if (percentage >= 60) {
-                gradeElement.style.background = 'linear-gradient(90deg, #FF9800, #FF5722)';
-            } else {
-                gradeElement.style.background = 'linear-gradient(90deg, #F44336, #D32F2F)';
-            }
-            
-            // Keep text transparent to show the gradient
-            gradeElement.style.webkitBackgroundClip = 'text';
-            gradeElement.style.backgroundClip = 'text';
         }
     </script>
 </body>
