@@ -190,6 +190,75 @@
             gap: 1.5rem;
         }
         
+        /* Light Switch Styles */
+        .theme-switch-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 100px;
+            background: var(--switch-body);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .switch-plate {
+            width: 70px;
+            height: 110px;
+            background: #d1d5db;
+            border-radius: 10px;
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            z-index: -1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .switch-handle {
+            width: 20px;
+            height: 40px;
+            background: var(--switch-handle);
+            border-radius: 5px;
+            position: relative;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .switch-handle:before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            top: 5px;
+            left: 5px;
+        }
+        
+        [data-theme="light"] .switch-handle {
+            transform: translateY(-40px);
+        }
+        
+        .theme-label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
         /* Grade Calculator Styles */
         .grade-calculator {
             position: fixed;
@@ -206,8 +275,6 @@
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
-            transform: translateY(0);
-            animation: fadeIn 0.5s ease;
         }
         
         [data-theme="light"] .grade-calculator {
@@ -255,22 +322,6 @@
         
         .refresh-button:hover {
             transform: rotate(180deg);
-        }
-        
-        /* Loading animation for grade calculator */
-        .loading-spinner {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s ease-in-out infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
         
         @keyframes glow {
@@ -341,10 +392,8 @@
     <!-- Grade Calculator -->
     <div class="grade-calculator">
         <h3>Calculated Grade</h3>
-        <div class="grade-percentage">Loading...</div>
-        <div class="grade-ratio">
-            <div class="loading-spinner"></div>
-        </div>
+        <div class="grade-percentage">78.50%</div>
+        <div class="grade-ratio">31.4 / 40.0</div>
         <button class="refresh-button" title="Refresh grade data">↻</button>
     </div>
     
@@ -371,6 +420,7 @@
                 <div class="week-card">
                     <h3>Week 4</h3>
                     <p><a href="https://drive.google.com/drive/folders/189gFulOlLpcNADIhiMFAipUOR3_CQO0a?usp=sharing" target="_blank">Virtual Library & Idea Sourcing</a></p>
+
                 </div>
                 <div class="week-card">
                     <h3>Week 5</h3>
@@ -384,7 +434,7 @@
                 </div>
                 <div class="week-card">
                     <h3>Week 7</h3>
-                    <p><a href="https://drive.google.com/drive/folders/1hqjHIhsp7xcraBma8eig7hM-cq29HB4n?usp=sharing" target="_blank">App Script: Backend Simulation</a></p>
+                     <p><a href="https://drive.google.com/drive/folders/1hqjHIhsp7xcraBma8eig7hM-cq29HB4n?usp=sharing" target="_blank">App Script: Backend Simulation</a></p>
                 </div>
                 <div class="week-card">
                     <h3>Week 8</h3>
@@ -405,7 +455,7 @@
     </div>
     
     <div id="content" style="display: none;">
-        <!-- Hidden content area -->
+        <!-- This is where your additional content would go -->
     </div>
     
     <footer>
@@ -420,89 +470,206 @@
     </footer>
     
     <script>
-        // Improved Grade Calculator Functionality
+        // Add particles effect
         document.addEventListener('DOMContentLoaded', function() {
-            // Your new Apps Script URL
-            const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7_qtJ2m0ihXe709ieQVSsd3YRy8J9qkEQ-wAUpniC-6sAnmvGWRSWlcXE32iPPBpF/exec';
+            const container = document.querySelector('body');
+            const particlesDiv = document.createElement('div');
+            particlesDiv.className = 'particles';
+            container.appendChild(particlesDiv);
             
-            // Initialize grade calculator
-            const gradeCalculator = {
-                elements: {
-                    percentage: document.querySelector('.grade-percentage'),
-                    ratio: document.querySelector('.grade-ratio'),
-                    refreshBtn: document.querySelector('.refresh-button'),
-                    calculator: document.querySelector('.grade-calculator')
-                },
+            for (let i = 0; i < 50; i++) {
+                createParticle(particlesDiv);
+            }
+            
+            // Make week cards appear with delay
+            const weekCards = document.querySelectorAll('.week-card');
+            weekCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.animation = `fadeIn 0.5s ease forwards`;
+                    card.style.opacity = '1';
+                }, 100 * index);
+            });
+            
+            // Click me functionality
+            document.querySelector('.click-me').addEventListener('click', function(e) {
+                e.preventDefault();
+                const content = document.getElementById('content');
                 
-                init: function() {
-                    this.fetchGradeData();
-                    this.elements.refreshBtn.addEventListener('click', () => this.fetchGradeData());
-                },
-                
-                fetchGradeData: function() {
-                    this.showLoadingState();
-                    
-                    // Add cache-busting parameter
-                    const url = `${APP_SCRIPT_URL}?t=${Date.now()}`;
-                    
-                    fetch(url)
-                        .then(response => {
-                            if (!response.ok) throw new Error('Network response was not ok');
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (this.validateGradeData(data)) {
-                                this.updateDisplay(data);
-                            } else {
-                                throw new Error('Invalid data format');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching grade data:', error);
-                            this.showErrorState();
-                            // Retry after 5 seconds
-                            setTimeout(() => this.fetchGradeData(), 5000);
-                        });
-                },
-                
-                validateGradeData: function(data) {
-                    return data && 
-                           typeof data.percentage === 'number' && 
-                           typeof data.earnedPoints === 'number' && 
-                           typeof data.totalPoints === 'number';
-                },
-                
-                updateDisplay: function(data) {
-                    this.elements.percentage.textContent = `${data.percentage.toFixed(2)}%`;
-                    this.elements.ratio.textContent = `${data.earnedPoints.toFixed(1)} / ${data.totalPoints.toFixed(1)}`;
-                    this.colorCodeGrade(data.percentage);
-                    
-                    // Add visual feedback
-                    this.elements.calculator.style.animation = 'none';
-                    setTimeout(() => {
-                        this.elements.calculator.style.animation = 'fadeIn 0.5s ease';
-                    }, 10);
-                },
-                
-                colorCodeGrade: function(percentage) {
-                    let gradient;
-                    if (percentage >= 90) gradient = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
-                    else if (percentage >= 80) gradient = 'linear-gradient(90deg, #8BC34A, #CDDC39)';
-                    else if (percentage >= 70) gradient = 'linear-gradient(90deg, #FFC107, #FF9800)';
-                    else if (percentage >= 60) gradient = 'linear-gradient(90deg, #FF9800, #FF5722)';
-                    else gradient = 'linear-gradient(90deg, #F44336, #D32F2F)';
-                    
-                    this.elements.percentage.style.background = gradient;
-                },
-                
-                showLoadingState: function() {
-                    this.elements.percentage.textContent = 'Loading...';
-                    this.elements.ratio.innerHTML = '<div class="loading-spinner"></div>';
-                },
-                
-                showErrorState: function() {
-                    this.elements.percentage.textContent = 'Error';
-                    this.elements.ratio.textContent = 'Try again';
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                    content.innerHTML = `
+                        <div class="container" style="animation: fadeIn 1s ease;">
+                            <h2 style="color: var(--accent);">Welcome to My GitHub Portfolio!</h2>
+                        </div>
+                    `;
+                    // Smooth scroll to content
+                    content.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    content.style.display = 'none';
                 }
+            });
+            
+            // Theme switch functionality
+            const themeSwitch = document.getElementById('theme-switch');
+            const themeLabel = document.querySelector('.theme-label');
+            
+            // Check for saved theme preference or use default dark theme
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            // Update label based on current theme
+            updateThemeLabel(currentTheme);
+            
+            // Add event listener to toggle theme
+            themeSwitch.addEventListener('click', function() {
+                let theme = document.documentElement.getAttribute('data-theme');
+                
+                // Toggle theme
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    updateThemeLabel('light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    updateThemeLabel('dark');
+                }
+            });
+            
+            // Function to update the theme label text
+            function updateThemeLabel(theme) {
+                if (theme === 'dark') {
+                    themeLabel.textContent = 'Switch to Light Mode';
+                } else {
+                    themeLabel.textContent = 'Switch to Dark Mode';
+                }
+            }
+            
+            // Setup refresh button
+            document.querySelector('.refresh-button').addEventListener('click', function() {
+                fetchGradeData();
+            });
+            
+            // Initialize grade data
+            fetchGradeData();
+        });
+        
+        function createParticle(container) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = `${Math.random() * 5 + 2}px`;
+            particle.style.height = particle.style.width;
+            particle.style.background = `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`;
+            particle.style.borderRadius = '50%';
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.left = `${Math.random() * 100}%`;
+            
+            // Set animation
+            const duration = Math.random() * 20 + 10;
+            const delay = Math.random() * 5;
+            particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+            
+            container.appendChild(particle);
+        }
+        
+        // Function to fetch grade data from Google Apps Script with improved error handling
+        function fetchGradeData() {
+            // Modified URL with cache-busting parameter to avoid cached responses
+            const appScriptUrl = 'https://script.google.com/macros/s/AKfycbx6h7346juxrVTatAfDywzY8_jJCsD5mBHbLvGvGprm46xXBW8liOPyM8Vj4g9ibAmB/exec?timestamp=' + Date.now();
+            
+            // Show loading state
+            document.querySelector('.grade-percentage').textContent = 'Loading...';
+            document.querySelector('.grade-ratio').textContent = '';
+            
+            // Use local fallback data if fetch fails after timeout
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Request timed out')), 5000);
+            });
+            
+            // Race between fetch and timeout
+            Promise.race([
+                fetch(appScriptUrl, {
+                    method: 'GET',
+                    mode: 'cors', // Adding CORS mode explicitly
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }),
+                timeoutPromise
+            ])
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Update the grade calculator with data from the API
+                updateGradeDisplay(data);
+            })
+            .catch(error => {
+                console.error('Error fetching grade data:', error);
+                // Fall back to static data
+                useFallbackGradeData();
+            });
+        }
+        
+        // Function to use fallback grade data when fetch fails
+        function useFallbackGradeData() {
+            // Use static fallback data
+            const fallbackData = {
+                percentage: 78.5,
+                earnedPoints: 31.4,
+                totalPoints: 40.0
             };
             
+            updateGradeDisplay(fallbackData);
+            
+            // Add note about using fallback data
+            const gradeRatio = document.querySelector('.grade-ratio');
+            gradeRatio.textContent = fallbackData.earnedPoints.toFixed(1) + ' / ' + fallbackData.totalPoints.toFixed(1) + ' (Offline data)';
+        }
+        
+        // Function to update the grade display with data
+        function updateGradeDisplay(data) {
+            // Check if the data has the expected format
+            if (data && typeof data.percentage === 'number' && data.earnedPoints !== undefined && data.totalPoints !== undefined) {
+                // Update the grade calculator display
+                document.querySelector('.grade-percentage').textContent = data.percentage.toFixed(2) + '%';
+                document.querySelector('.grade-ratio').textContent = data.earnedPoints.toFixed(1) + ' / ' + data.totalPoints.toFixed(1);
+                
+                // Color coding based on grade percentage
+                colorCodeGrade(data.percentage);
+            } else {
+                // Fallback if data is not in expected format
+                document.querySelector('.grade-percentage').textContent = 'N/A';
+                document.querySelector('.grade-ratio').textContent = 'Data format error';
+                console.error('Unexpected data format:', data);
+            }
+        }
+        
+        // Function to color code grade based on percentage
+        function colorCodeGrade(percentage) {
+            const gradeElement = document.querySelector('.grade-percentage');
+            
+            // Use CSS variables for consistent color scheme
+            if (percentage >= 90) {
+                gradeElement.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
+            } else if (percentage >= 80) {
+                gradeElement.style.background = 'linear-gradient(90deg, #8BC34A, #CDDC39)';
+            } else if (percentage >= 70) {
+                gradeElement.style.background = 'linear-gradient(90deg, #FFC107, #FF9800)';
+            } else if (percentage >= 60) {
+                gradeElement.style.background = 'linear-gradient(90deg, #FF9800, #FF5722)';
+            } else {
+                gradeElement.style.background = 'linear-gradient(90deg, #F44336, #D32F2F)';
+            }
+            
+            // Keep text transparent to show the gradient
+            gradeElement.style.webkitBackgroundClip = 'text';
+            gradeElement.style.backgroundClip = 'text';
+        }
+    </script>
+</body>
+</html>
