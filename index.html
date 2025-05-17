@@ -315,6 +315,87 @@
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
+
+        /* Password Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: var(--background);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--card-border);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content h3 {
+            color: var(--accent);
+            margin-top: 0;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            border: 1px solid var(--card-border);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        
+        .submit-btn, .cancel-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
+        
+        .submit-btn:hover, .cancel-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .error-message {
+            color: #ff5252;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
         
         @keyframes glow {
             0% {
@@ -365,6 +446,11 @@
             .weeks-container {
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 1rem;
+            }
+            
+            .modal-content {
+                width: 85%;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -418,7 +504,7 @@
                 </div>
                 <div class="week-card">
                     <h3>Week 10</h3>
-                    <p><a href="https://chatgpt.com/share/6827e7e4-79c0-800e-b675-45ea3a3e3a7b" target="_blank">HIF-Lumen</a></p>
+                    <p><a href="#" id="hif-lumen-link" class="password-protected">HIF-Lumen</a></p>
                 </div>
             </div>
             
@@ -428,6 +514,20 @@
     
     <div id="content" style="display: none;">
         <!-- This is where your additional content would go -->
+    </div>
+    
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <h3>Password Required</h3>
+            <p>Please enter your ID to access the HIF-Lumen content</p>
+            <input type="password" id="password-input" class="password-input" placeholder="Enter your password">
+            <div id="error-message" class="error-message">Incorrect password. Please try again.</div>
+            <div class="modal-buttons">
+                <button id="cancel-btn" class="cancel-btn">Cancel</button>
+                <button id="submit-btn" class="submit-btn">Submit</button>
+            </div>
+        </div>
     </div>
     
     <footer>
@@ -577,7 +677,91 @@
             
             // Fetch grades on page load (with a small delay to ensure DOM is ready)
             setTimeout(fetchGrades, 1000);
+            
+            // Password protection for Week 10 HIF-Lumen link
+            const hifLumenLink = document.getElementById('hif-lumen-link');
+            const passwordModal = document.getElementById('password-modal');
+            const passwordInput = document.getElementById('password-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const errorMessage = document.getElementById('error-message');
+            
+            // The correct password
+            const correctPassword = "2417852";
+            
+            // The target URL
+            const targetURL = "https://chatgpt.com/share/6827e7e4-79c0-800e-b675-45ea3a3e3a7b";
+            
+            // Open modal when HIF-Lumen link is clicked
+            hifLumenLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                passwordModal.style.display = 'flex';
+                passwordInput.focus();
+                errorMessage.style.display = 'none';
+            });
+            
+            // Close modal when cancel button is clicked
+            cancelBtn.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+                passwordInput.value = '';
+                errorMessage.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            passwordModal.addEventListener('click', function(e) {
+                if (e.target === passwordModal) {
+                    passwordModal.style.display = 'none';
+                    passwordInput.value = '';
+                    errorMessage.style.display = 'none';
+                }
+            });
+            
+            // Check password when submit button is clicked
+            submitBtn.addEventListener('click', checkPassword);
+            
+            // Also check password when Enter key is pressed
+            passwordInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+            
+            // Function to check password
+            function checkPassword() {
+                const enteredPassword = passwordInput.value;
+                
+                if (enteredPassword === correctPassword) {
+                    // Password is correct, redirect to the target URL
+                    window.open(targetURL, '_blank');
+                    passwordModal.style.display = 'none';
+                    passwordInput.value = '';
+                    errorMessage.style.display = 'none';
+                } else {
+                    // Password is incorrect, show error message
+                    errorMessage.style.display = 'block';
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                    
+                    // Shake effect for wrong password
+                    const modalContent = document.querySelector('.modal-content');
+                    modalContent.style.animation = 'none';
+                    setTimeout(() => {
+                        modalContent.style.animation = 'shake 0.5s ease';
+                    }, 10);
+                }
+            }
         });
+        
+        // Add shake animation for wrong password
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+            </style>
+        `);
         
         function createParticle(container) {
             const particle = document.createElement('div');
