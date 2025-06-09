@@ -422,6 +422,21 @@
                 padding: 1.5rem;
             }
         }
+        .grade-box {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .breakdown {
+      text-align: left;
+      margin-top: 1rem;
+    }
+    .breakdown p {
+      margin: 0.3rem 0;
+    }Ï
     </style>
 </head>
 <body>
@@ -429,6 +444,10 @@
         <header>
             <h1 class="floating">Islombek</h1>
             <div class="id-number">ID: 2417852</div>
+            <h1>Your Current Grade</h1>
+  <div class="grade-box" id="gradeReport">
+    <p>Loading grades...</p>
+  </div>
         </header>
         
         <main>
@@ -694,6 +713,29 @@
             
             container.appendChild(particle);
         }
+
+        const apiUrl = 'https://script.google.com/macros/s/AKfycbz4devITe1_YX3FNOyPzgEsCJeAgZkwBt-hMxqVgupu27QMZZlsh67kz5DTEXHy7-z5NQ/exec';
+
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        const box = document.getElementById('gradeReport');
+        box.innerHTML = `
+          <p><strong>Final Grade:</strong> ${data.finalGrade}%</p>
+          <p><strong>Points:</strong> ${data.earnedPoints} / ${data.totalPoints}</p>
+          <div class="breakdown">
+            <h3>Breakdown</h3>
+            <p><strong>Assignment:</strong> ${data.breakdown.assignment.earned} / ${data.breakdown.assignment.max}</p>
+            <p><strong>Quiz:</strong> ${data.breakdown.quiz.earned} / ${data.breakdown.quiz.max}</p>
+            <p><strong>Attendance:</strong> ${data.breakdown.attendance.earned} / ${data.breakdown.attendance.max}</p>
+            <p><strong>Project:</strong> ${data.breakdown.project.earned} / ${data.breakdown.project.max}</p>
+          </div>
+        `;
+      })
+      .catch(err => {
+        document.getElementById('gradeReport').innerHTML = `<p style="color: red;">Failed to load grade data. Please try again later.</p>`;
+        console.error('Fetch error:', err);
+      });
     </script>
 </body>
 </html>
