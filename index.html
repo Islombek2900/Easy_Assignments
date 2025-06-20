@@ -726,7 +726,7 @@
             container.appendChild(particle);
         }
 
-        const apiUrl = 'https://script.google.com/macros/s/AKfycbxx66R9EYYbOg1_8nwAAG1ZuJ05bOq_uZmS5Xl-TacwabuIyJgJhXS8-CuDdQHYxaIE8A/exec;
+        const apiUrl = 'https://script.google.com/macros/s/AKfycbz4devITe1_YX3FNOyPzgEsCJeAgZkwBt-hMxqVgupu27QMZZlsh67kz5DTEXHy7-z5NQ/exec';
 
     fetch(apiUrl)
       .then(response => response.json())
@@ -741,7 +741,6 @@
             <p><strong>Quiz:</strong> ${data.breakdown.quiz.earned} / ${data.breakdown.quiz.max}</p>
             <p><strong>Attendance:</strong> ${data.breakdown.attendance.earned} / ${data.breakdown.attendance.max}</p>
             <p><strong>Project:</strong> ${data.breakdown.project.earned} / ${data.breakdown.project.max}</p>
-            <p><strong>Extra:</strong> ${data.breakdown.extra.earned} / ${data.breakdown.extra.max}</p>
           </div>
         `;
       })
